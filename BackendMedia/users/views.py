@@ -13,6 +13,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 
 class UsersViewSet(APIView):
+    @swagger_auto_schema(responses={200: serializers.UserProfileSerializer(many=True)})
     def get(self, request, id=None):
         if id:
             item = get_object_or_404(models.UserProfile, user_id=id)

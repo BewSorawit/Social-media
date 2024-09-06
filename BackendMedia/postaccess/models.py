@@ -12,7 +12,7 @@ class PostAccess(models.Model):
         UserProfile, related_name='post_access', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Access for {self.user.username} to Post {self.post.id}"
+        return f"Access for {self.user.username} to Post {self.post.post_id}"
 
     class Meta:
         db_table = 'PostAccess'
