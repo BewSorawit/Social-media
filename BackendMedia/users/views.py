@@ -9,6 +9,9 @@ from . import models, serializers
 from django.contrib.auth.hashers import make_password, check_password
 from .models import UserProfile
 from .serializers import UserProfileSerializer
+from drf_yasg.utils import swagger_auto_schema
+
+
 class UsersViewSet(APIView):
     def get(self, request, id=None):
         if id:
@@ -20,11 +23,12 @@ class UsersViewSet(APIView):
         serializer = serializers.UserProfileSerializer(items, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(request_body=serializers.UserProfileSerializer, responses={201: serializers.UserProfileSerializer})
     def post(self, request):
         data = request.data.copy()
         if 'password' in data:
             data['password'] = make_password(data['password'])
-        
+
         serializer = serializers.UserProfileSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -44,6 +48,7 @@ class UsersViewSet(APIView):
     #     item.delete()
     #     return Response({"status": "success", "message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
+
 class LoginViewSet(APIView):
 
     def post(self, request):
@@ -59,8 +64,3 @@ class LoginViewSet(APIView):
             return Response({"status": "success", "message": "Login successful"}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "error", "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
-   
-   
-
-
-
