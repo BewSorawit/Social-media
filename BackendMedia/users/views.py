@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import UserProfile
 from .serializers import UserProfileSerializer
 from drf_yasg.utils import swagger_auto_schema
-
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class UsersViewSet(APIView):
     @swagger_auto_schema(responses={200: serializers.UserProfileSerializer(many=True)})
@@ -36,18 +36,36 @@ class UsersViewSet(APIView):
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    # def put(self, request, id=None):
-    #     item = get_object_or_404(models.UserProfile, user_id=id)
-    #     serializer = serializers.UserProfileSerializer(item, data=request.data, partial=True)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-    #     return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, id=None):
+        item = get_object_or_404(models.UserProfile, user_id=id)
+        item.delete()
+        return Response({"status": "success", "message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
-    # def delete(self, request, id=None):
-    #     item = get_object_or_404(models.UserProfile, user_id=id)
-    #     item.delete()
-    #     return Response({"status": "success", "message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+class UserProfileUpdateAPIViewSet(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def put(self, request, id=None):
+        item = get_object_or_404(models.UserProfile, user_id=id)
+        data = request.data.copy()
+
+        if 'password' in data:
+            data['password'] = make_password(data['password'])
+
+        serializer = serializers.UserProfileSerializer(
+            item, data=data, partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "status": "success",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "status": "error",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginViewSet(APIView):
