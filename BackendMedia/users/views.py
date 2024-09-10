@@ -11,12 +11,43 @@ from .models import UserProfile
 from .serializers import UserProfileSerializer
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework.authtoken.models import Token
+
+
+
 
 class UsersViewSet(APIView):
+
+    print("a")
+    
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    print("b")
     @swagger_auto_schema(responses={200: serializers.UserProfileSerializer(many=True)})
+
+    
     def get(self, request, id=None):
+        if request.user.id != id:
+            return Response({"detail": "Permission denied."}, status=403)
+        print("Request user:", request.user)
+        try:
+            user = request.user
+            print("Request user:", user)
+        except (InvalidToken, TokenError) as e:
+            print("Token error:", str(e))
+            return Response({"status": "error", "message": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+
         if id:
-            item = get_object_or_404(models.UserProfile, user_id=id)
+            item = get_object_or_404(models.UserProfile, id=id)
             serializer = serializers.UserProfileSerializer(item)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
@@ -24,6 +55,27 @@ class UsersViewSet(APIView):
         serializer = serializers.UserProfileSerializer(items, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
+    # @swagger_auto_schema(request_body=serializers.UserProfileSerializer, responses={201: serializers.UserProfileSerializer})
+    # def post(self, request):
+    #     data = request.data.copy()
+    #     if 'password' in data:
+    #         data['password'] = make_password(data['password'])
+
+    #     serializer = serializers.UserProfileSerializer(data=data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_201_CREATED)
+    #     return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id=None):
+        if request.user.id != id:
+            return Response({"detail": "Permission denied."}, status=403)
+        item = get_object_or_404(models.UserProfile, id=id)
+        item.delete()
+        return Response({"status": "success", "message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CreateUsersViewSet(APIView):
     @swagger_auto_schema(request_body=serializers.UserProfileSerializer, responses={201: serializers.UserProfileSerializer})
     def post(self, request):
         data = request.data.copy()
@@ -36,16 +88,13 @@ class UsersViewSet(APIView):
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id=None):
-        item = get_object_or_404(models.UserProfile, user_id=id)
-        item.delete()
-        return Response({"status": "success", "message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
 class UserProfileUpdateAPIViewSet(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def put(self, request, id=None):
-        item = get_object_or_404(models.UserProfile, user_id=id)
+        if request.user.id != id:
+            return Response({"detail": "Permission denied."}, status=403)
+        item = get_object_or_404(models.UserProfile, id=id)
         data = request.data.copy()
 
         if 'password' in data:
@@ -68,18 +117,48 @@ class UserProfileUpdateAPIViewSet(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class LoginViewSet(APIView): 
+
+#     def post(self, request):
+#         username = request.data.get('username')
+#         password = request.data.get('password')
+
+#         try:
+#             user = UserProfile.objects.get(username=username)
+#         except UserProfile.DoesNotExist:
+#             return Response({"status": "error", "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#         if check_password(password, user.password):
+#             return Response({"status": "success", "message": "Login successful"}, status=status.HTTP_200_OK)
+#         else:
+#             return Response({"status": "error", "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
 class LoginViewSet(APIView):
 
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
 
+        # user = UserProfile.objects.filter(id=2).first()
+        # print(user)
         try:
             user = UserProfile.objects.get(username=username)
         except UserProfile.DoesNotExist:
             return Response({"status": "error", "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         if check_password(password, user.password):
-            return Response({"status": "success", "message": "Login successful"}, status=status.HTTP_200_OK)
+            # Generate JWT Token
+            # token, created = Token.objects.get_or_create(user=user)
+            refresh = RefreshToken.for_user(user)
+            serializer = UserProfileSerializer(user)
+            return Response({
+                "status": "success",
+                "message": "Login successful",
+                # "token": token.key,
+                "id": user.id,
+                "user": serializer.data,
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            }, status=status.HTTP_200_OK)
         else:
             return Response({"status": "error", "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
