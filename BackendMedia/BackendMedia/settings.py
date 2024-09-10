@@ -54,13 +54,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
    
 ]
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.AllowAny',
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [],
-# }
-
 
 
 REST_FRAMEWORK = {
@@ -69,13 +62,13 @@ REST_FRAMEWORK = {
         
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
+       
     ),
 }
 
 # Simple JWT settings
 SIMPLE_JWT = {
-    # 'USER_ID_FIELD': 'id',  # ใช้ user_id เป็น Primary Key
+    
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
