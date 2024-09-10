@@ -1,0 +1,70 @@
+/* src/component/login/Login.css */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* ให้ฟอร์มอยู่กลางหน้าจอทั้งแนวตั้งและแนวนอน */
+    background-color: #7F93FB;
+  }
+  
+  .login-form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding-top: 0;
+  }
+  
+  .login-form h2 {
+    margin-bottom: 30px;
+    margin-top: 20px;
+    text-align: center;
+    color: #7F93FB;
+    font-size: 50px;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  
+  .input-group input {
+    width: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 8px;
+    padding-left: 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 14px;
+    box-sizing: border-box; /* ปรับให้ความกว้างรวมถึง padding และ border */
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 5px;
+    box-sizing: border-box; /* ปรับให้ความกว้างรวมถึง padding และ border */
+}
+
+  
+  .login-button:hover {
+    background-color: #45a049;
+  }
+   .btn-register{
+    margin-left: 5px;
+    color:#7F93FB;
+    cursor: pointer;
+  }
+
+  .login-form p{
+    color: #758694;
+  }
