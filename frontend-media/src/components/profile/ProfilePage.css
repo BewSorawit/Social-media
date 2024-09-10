@@ -1,0 +1,54 @@
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  width: 100%;
+  background-color: #f0f0f0;
+  padding: 50px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.profile-post-photo {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.post-photo {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+.profile-name {
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.profile-bio {
+  font-size: 16px;
+  color: gray;
+}
+
+.profile-actions {
+  margin-top: 15px;
+}
+
+.profile-content {
+  margin-top: 30px;
+}
+
+.post-header, .about-header {
+  font-weight: bold;
+}
+
