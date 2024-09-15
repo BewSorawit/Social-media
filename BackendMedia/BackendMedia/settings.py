@@ -52,25 +52,25 @@ INSTALLED_APPS = [
     'comments',
     'follows',
     'rest_framework_simplejwt',
-   
+
 ]
 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        
+
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-       
+
     ),
 }
 
 # Simple JWT settings
 SIMPLE_JWT = {
-    
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=90),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
@@ -78,7 +78,6 @@ SIMPLE_JWT = {
 
 
 AUTH_USER_MODEL = 'users.UserProfile'
-
 
 
 MIDDLEWARE = [
