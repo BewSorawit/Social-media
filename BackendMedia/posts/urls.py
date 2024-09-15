@@ -10,4 +10,9 @@ urlpatterns = [
     path('create/', PostViewSet.as_view({'post': 'create'})),
     path('<int:pk>/',
          PostViewSet.as_view({'put': 'update', 'delete': 'delete'})),
+    path('users/<int:user_id>/followed_posts/',
+         PostViewSet.as_view({'get': 'get_followed_posts'}), name='followed-posts'),
+    path('users/<int:user_id>/feed/',
+         PostViewSet.as_view({'get': 'get_feed'}), name='user-feed'),
+
 ]
