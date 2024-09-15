@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import './FeedPage.css';
-import image from './1.png'
+import image from './1.png';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faCommentAlt, faNewspaper, faUser, faCog } from '@fortawesome/free-solid-svg-icons';
