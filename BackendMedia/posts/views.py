@@ -25,17 +25,30 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    def list_by_id(self, request, pk=None):
-        try:
-            post = Post.objects.get(pk=pk)
+    # def list_by_id(self, request, author_id=None):
+    #     #เห็นเมื่อเป็นเพื่อนกัน
+    #     try:
+    #         # post = Post.objects.get(pk=pk)
+    #         posts = Post.objects.filter(author_id=author_id)
            
-            if post.visibility == 'private' and post.author != request.user:
-                return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+    #         if not visible_posts:
+    #             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-            serializer = PostSerializer(post)
-            return Response(serializer.data)
-        except Post.DoesNotExist:
-            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+    #         serializer = PostSerializer(visible_posts, many=True)
+    #         return Response(serializer.data)
+    #     except Post.DoesNotExist:
+    #         return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+    def list_by_id(self, request, author_id=None):
+        posts = Post.objects.filter(author_id=author_id)
+        visible_posts = [
+            post for post in posts
+            if post.visibility == 'public' or post.author.id == request.user.id
+        ]
+        if not visible_posts:
+            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PostSerializer(visible_posts, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = PostSerializer(data=request.data)
