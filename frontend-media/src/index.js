@@ -9,7 +9,7 @@ import FeedPage from './components/feed/FeedPage.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <FeedPage />
+    <App />
     <FeedPage />
   </React.StrictMode>
 );
