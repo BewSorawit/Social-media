@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Card, Modal, Form } from 'react-bootstrap';
 import './FeedPage.css';
 import image from './1.png';
@@ -9,6 +9,7 @@ import axios from 'axios';
 function FeedPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [postContent, setPostContent] = useState('');
+  const [posts, setPosts] = useState([]); // State สำหรับเก็บโพสต์ที่ดึงมา
 
   const handlePostClick = () => {
     setShowPopup(true);
@@ -19,18 +20,54 @@ function FeedPage() {
   };
 
   const handlePostSubmit = () => {
-    // ส่งคำขอ POST ไปยัง API
-    axios.post('http://localhost:8000/api/posts/', { content: postContent })
-      .then(response => {
-        console.log('Post submitted:', response.data);
-        // ล้างข้อมูลในฟอร์มหลังจากส่งสำเร็จ
-        setPostContent('');
-        setShowPopup(false);
-      })
-      .catch(error => {
-        console.error('There was an error posting the data!', error);
-      });
+    const token = localStorage.getItem('token');
+    console.log('Token on submit:', token); // แสดง token ในคอนโซล
+
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
+
+    axios.post('http://localhost:8000/hurry-feed/posts/create/', 
+      { content: postContent },
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+      console.log('Post submitted:', response.data);
+      setPostContent('');
+      setShowPopup(false);
+      fetchPosts(); // ดึงข้อมูลโพสต์ใหม่หลังจากสร้างโพสต์
+    })
+    .catch(error => {
+      console.error('There was an error posting the data!', error);
+    });
   };
+
+  const fetchPosts = () => {
+    const token = localStorage.getItem('token');
+    console.log('Token on fetch:', token); // แสดง token ในคอนโซล
+
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
+
+    axios.get('http://localhost:8000/hurry-feed/posts/public/', 
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+      console.log('Posts fetched:', response.data); // ตรวจสอบข้อมูลโพสต์ที่ได้รับ
+      setPosts(response.data); // เก็บโพสต์ที่ดึงมาลงใน state
+    })
+    .catch(error => {
+      console.error('Error fetching posts:', error);
+    });
+  };
+
+  // ดึงข้อมูลโพสต์เมื่อโหลดคอมโพเนนต์
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   return (
     <Container>
@@ -67,25 +104,26 @@ function FeedPage() {
             </Card.Body>
           </Card>
 
-          {/* Repeat this for each post */}
-          <Card className="post">
-            <Card.Body>
-              <div className="post-header">
-                <img src={image} alt="User Avatar" className="avatar" />
-                <div className="post-details">
-                  <h3>Project</h3>
-                  <p>Posted by username</p>
+          {/* แสดงโพสต์ทั้งหมดที่ดึงมาจาก API */}
+          {posts.map(post => (
+            <Card key={post.id} className="post">
+              <Card.Body>
+                <div className="post-header">
+                  <img src={image} alt="User Avatar" className="avatar" />
+                  <div className="post-details">
+                    <h3>{post.title}</h3>
+                    <p>Posted by {post.author.username}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="post-actions">
-                <Button variant="primary"><FontAwesomeIcon icon={faThumbsUp} /></Button>
-                <Form.Control type="text" placeholder="Write a comment..." />
-                <Button variant="primary"><FontAwesomeIcon icon={faCommentAlt} /></Button>
-              </div>
-            </Card.Body>
-          </Card>
-
-          {/* Add more posts as needed */}
+                <Card.Text>{post.content}</Card.Text>
+                <div className="post-actions">
+                  <Button variant="primary"><FontAwesomeIcon icon={faThumbsUp} /></Button>
+                  <Form.Control type="text" placeholder="Write a comment..." />
+                  <Button variant="primary"><FontAwesomeIcon icon={faCommentAlt} /></Button>
+                </div>
+              </Card.Body>
+            </Card>
+          ))}
         </Col>
       </Row>
 
