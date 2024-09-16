@@ -17,22 +17,14 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.authtoken.models import Token
 
+
 class UsersViewSet(APIView):
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    @swagger_auto_schema(responses={200: serializers.UserProfileSerializer(many=True)})
 
+    @swagger_auto_schema(responses={200: serializers.UserProfileSerializer(many=True)})
     def get(self, request, id=None):
-        if request.user.id != id:
-            return Response({"detail": "Permission denied."}, status=403)
-        print("Request user:", request.user)
-        try:
-            user = request.user
-            print("Request user:", user)
-        except (InvalidToken, TokenError) as e:
-            print("Token error:", str(e))
-            return Response({"status": "error", "message": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
         if id:
             item = get_object_or_404(models.UserProfile, id=id)
@@ -42,7 +34,6 @@ class UsersViewSet(APIView):
         items = models.UserProfile.objects.all()
         serializer = serializers.UserProfileSerializer(items, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-
 
     def delete(self, request, id=None):
         if request.user.id != id:
@@ -64,6 +55,7 @@ class CreateUsersViewSet(APIView):
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserProfileUpdateAPIViewSet(APIView):
     parser_classes = [MultiPartParser, FormParser]
@@ -92,6 +84,7 @@ class UserProfileUpdateAPIViewSet(APIView):
             "status": "error",
             "errors": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginViewSet(APIView):
 
