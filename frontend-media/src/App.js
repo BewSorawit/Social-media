@@ -4,6 +4,7 @@ import './App.css';
 import Navbar from './components/navbar/navbar';
 import Login from './components/login/login';
 import Register from './components/register/register';
+import FeedPage from './components/feed/FeedPage'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/FeedPage" element={<FeedPage />} />
         </Routes>
       </div>
     </Router>
