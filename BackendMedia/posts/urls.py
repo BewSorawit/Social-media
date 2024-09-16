@@ -1,11 +1,18 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from .views import PostViewSet
 
-# สร้าง router สำหรับ PostViewSet
-router = DefaultRouter()
-router.register(r'posts', PostViewSet)
-
 urlpatterns = [
-    path('', include(router.urls)),
+    path('public/', PostViewSet.as_view({'get': 'list_public'})),
+    path('public/by_author/<int:author_id>/',
+         PostViewSet.as_view({'get': 'list_public_by_author'})),
+    path('all/', PostViewSet.as_view({'get': 'list_all'})),
+    path('private/', PostViewSet.as_view({'get': 'list_private'})),
+    path('create/', PostViewSet.as_view({'post': 'create'})),
+    path('<int:pk>/',
+         PostViewSet.as_view({'put': 'update', 'delete': 'delete'})),
+    path('users/<int:user_id>/followed_posts/',
+         PostViewSet.as_view({'get': 'get_followed_posts'}), name='followed-posts'),
+    path('users/<int:user_id>/feed/',
+         PostViewSet.as_view({'get': 'get_feed'}), name='user-feed'),
+
 ]
