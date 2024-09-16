@@ -1,10 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import logo from './logo.svg';
-import './App.css';
+//import logo from './logo.svg';
+//import './App.css';
 import Navbar from './components/navbar/navbar';
 import Login from './components/login/login';
 import Register from './components/register/register';
-import FeedPage from './components/feed/FeedPage'
+import FeedPage from './components/feed/FeedPage.js';
+import ProfilePage from './components/profile/ProfilePage.js';
+import PostList from './components/profile/ProfilePostPage.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

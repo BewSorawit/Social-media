@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'comments',
     'follows',
     'rest_framework_simplejwt',
-   'corsheaders',
+    'corsheaders',
+
 ]
 
 
