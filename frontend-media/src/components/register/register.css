@@ -83,3 +83,30 @@
   select{
     height: 45px;
   }
+
+  .btn-success {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .btn-success:hover {
+    background-color: #218838;
+  }
+
+  .btn-login{
+    margin-left: 5px;
+    color:#7F93FB;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+
+  .register-form p{
+    margin-top: 0;
+    color: #758694;
+  }

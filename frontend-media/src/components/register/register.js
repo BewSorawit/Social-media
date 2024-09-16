@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import './register.css'; // เพิ่มการ import CSS
+import { useNavigate } from "react-router-dom";
+import './register.css';
+import axios from "axios";
 
 function Register() {
   const [formData, setFormData] = useState({
-    name: '',
-    lastname: '',
+    first_name: '',
+    last_name: '',
     username: '',
     password: '',
-    birthDate: '',  // เปลี่ยนเป็น birthDate
-    gender: ''
+    confirmPassword: '',
+    date_of_birth: '',
+    gender: '',
+    profile_picture: null
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -18,10 +24,27 @@ function Register() {
     });
   };
 
+  const handleLogin = () => {
+    navigate("/");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // คุณสามารถจัดการข้อมูลฟอร์มที่ส่งไปได้ที่นี่
-    console.log(formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    axios
+      .post("http://127.0.0.1:8000/hurry-feed/users/user_profile/create_user/", formData)
+      .then((response) => {
+        alert("Registration Successful!");
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error registering!", error.response ? error.response.data : error.message);
+      });
   };
 
   return (
@@ -31,11 +54,11 @@ function Register() {
 
         <div className="form-row">
           <div className="form-group">
-            <label>Name:</label>
+            <label>First Name:</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="first_name"
+              value={formData.first_name || ''}
               onChange={handleChange}
               required
             />
@@ -45,8 +68,8 @@ function Register() {
             <label>Last Name:</label>
             <input
               type="text"
-              name="lastname"
-              value={formData.lastname}
+              name="last_name"
+              value={formData.last_name || ''}
               onChange={handleChange}
               required
             />
@@ -58,7 +81,7 @@ function Register() {
           <input
             type="text"
             name="username"
-            value={formData.username}
+            value={formData.username || ''}
             onChange={handleChange}
             required
           />
@@ -69,7 +92,7 @@ function Register() {
           <input
             type="password"
             name="password"
-            value={formData.password}
+            value={formData.password || ''}
             onChange={handleChange}
             required
           />
@@ -78,8 +101,9 @@ function Register() {
           <label>Confirm Password:</label>
           <input
             type="password"
-            name="password"
-            value={formData.password}
+            className="form-control"
+            name="confirmPassword"
+            value={formData.confirmPassword || ''}
             onChange={handleChange}
             required
           />
@@ -90,8 +114,8 @@ function Register() {
             <label>Date of Birth:</label>
             <input
               type="date"
-              name="birthDate"
-              value={formData.birthDate}
+              name="date_of_birth"
+              value={formData.date_of_birth || ''}
               onChange={handleChange}
               required
             />
@@ -101,17 +125,22 @@ function Register() {
             <label>Gender:</label>
             <select
               name="gender"
-              value={formData.gender}
+              value={formData.gender || ''}
               onChange={handleChange}
               required
             >
               <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
             </select>
           </div>
           </div>
-        <button type="submit">Register</button>
+        <button type="submit" className='btn btn-success'>Register</button>
+        <p>
+          Already have an account?
+          <a className="btn-login" onClick={handleLogin}>Login</a>
+        </p>
       </form>
     </div>
   );

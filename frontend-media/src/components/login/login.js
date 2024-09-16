@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import "./login.css";
 import axios from "axios";
+import axios from "axios";
 
 function Login() {
   const navigate = useNavigate();
@@ -56,9 +57,8 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)} // เก็บค่า password
           />
         </div>
-        <button className="login-button" onClick={handleLogin}>
-          Login
-        </button>
+        {error && <p className="error-message">{error}</p>}
+        <button className="login-button" onClick={handleLogin}>Login</button>
         <p>
           Don't have an account?
           <a className="btn-register" onClick={() => navigate("/register")}>
