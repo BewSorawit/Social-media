@@ -1,0 +1,88 @@
+.post-list-container {
+    max-width: 800px;
+    width: 100%; /* ให้กว้างเต็มพื้นที่ภายในคอนเทนเนอร์ */
+  }
+  
+  /* Card Styling */
+  .card {
+    width: 100%; /* ให้การ์ดกว้างเต็ม container */
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+  
+  .card-header {
+    background-color: #f5f6fa;
+    padding: 15px;
+    border-bottom: 1px solid #ebebeb;
+    display: flex;
+    align-items: center;
+  }
+  
+  .card-header .row {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-post-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .card-header span {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .card-header small {
+    font-size: 12px;
+    color: #90949c;
+  }
+  
+  .card-body {
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #ffffff;
+  }
+  
+  .card-text {
+    margin-bottom: 15px;
+  }
+  
+  .card-body img {
+    border-radius: 10px;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .card-footer {
+    background-color: #f5f6fa;
+    padding: 10px 15px;
+    text-align: right;
+    border-top: 1px solid #ebebeb;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .profile-content {
+      margin-top: 20px;
+    }
+  
+    .card-header span {
+      font-size: 16px;
+    }
+  
+    .card-header small {
+      font-size: 10px;
+    }
+  
+    .card-body {
+      font-size: 14px;
+    }
+  }
