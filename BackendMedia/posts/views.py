@@ -103,6 +103,10 @@ class PostViewSet(viewsets.ViewSet):
     from django.db.models import Q
 
     def get_followed_posts(self, request, user_id=None):
+
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
         try:
             user = UserProfile.objects.get(pk=user_id)
         except UserProfile.DoesNotExist:
