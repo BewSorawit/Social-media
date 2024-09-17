@@ -2,13 +2,14 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from follows.models import UserFollow
-from users.models import UserProfile
-from .models import Post
-from .serializers import PostSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.db.models import Q
+
+from posts.models import Post
+from users.models import UserProfile
+from follows.models import UserFollow
+from posts.serializers import PostSerializer
 
 
 class PostViewSet(viewsets.ViewSet):
@@ -99,43 +100,21 @@ class PostViewSet(viewsets.ViewSet):
             return Response({'detail': 'Post deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Post.DoesNotExist:
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+    from django.db.models import Q
 
     def get_followed_posts(self, request, user_id=None):
-        """Retrieve posts from users that the specified user is following."""
-        # ตรวจสอบว่าผู้ใช้ที่ระบุด้วย user_id มีอยู่
-        user = UserProfile.objects.filter(pk=user_id).first()
-        if not user:
+        try:
+            user = UserProfile.objects.get(pk=user_id)
+        except UserProfile.DoesNotExist:
             return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # ดึงรายการผู้ใช้ที่ user กำลังติดตาม
-        followed_users = UserFollow.objects.filter(
+        following_users = UserFollow.objects.filter(
             follower=user).values_list('followed', flat=True)
-
-        # ดึงโพสต์ทั้งหมดจากผู้ใช้ที่ติดตาม
+        mutual_followers = UserFollow.objects.filter(
+            follower__in=following_users, followed=user).values_list('follower', flat=True)
         posts = Post.objects.filter(
-            author__in=followed_users, visibility='public')
+            Q(visibility='public') |
+            (Q(author__in=mutual_followers) & Q(visibility='private'))
+        )
         serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
-
-    def get_feed(self, request, user_id=None):
-        """Retrieve posts visible to the specified user (including posts from followed users and their own posts)."""
-        # ตรวจสอบว่าผู้ใช้ที่ระบุด้วย user_id มีอยู่
-        user = UserProfile.objects.filter(pk=user_id).first()
-        if not user:
-            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # ดึงโพสต์ที่ผู้ใช้เป็นเจ้าของ
-        user_posts = Post.objects.filter(author=user)
-
-        # ดึงรายการผู้ใช้ที่ user กำลังติดตาม
-        followed_users = UserFollow.objects.filter(
-            follower=user).values_list('followed', flat=True)
-
-        # ดึงโพสต์ทั้งหมดจากผู้ใช้ที่ติดตาม
-        followed_posts = Post.objects.filter(
-            author__in=followed_users, visibility='public')
-
-        # รวมโพสต์ของผู้ใช้เองและโพสต์จากผู้ใช้ที่ติดตาม
-        queryset = user_posts | followed_posts
-        serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data)
