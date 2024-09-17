@@ -10,4 +10,5 @@ urlpatterns = [
          UserProfileUpdateAPIViewSet.as_view()),
     path('login/', LoginViewSet.as_view(), name='login'),
     path('search/', UserSearchView.as_view(), name='user-search'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

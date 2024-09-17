@@ -36,3 +36,25 @@ class UserProfile(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+    
+
+# class BlacklistedAccessToken(models.Model):
+#     token = models.CharField(max_length=500, unique=True)
+#     blacklisted_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return self.token
+
+class BlacklistedAccessToken(models.Model):
+    token = models.CharField(max_length=500, unique=True)
+    blacklisted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.token
+
+    @staticmethod
+    def is_blacklisted(token):
+        """
+        Check if the given token is blacklisted.
+        """
+        return BlacklistedAccessToken.objects.filter(token=token).exists()
