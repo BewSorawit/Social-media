@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-//import logo from './logo.svg';
-//import './App.css';
-import Navbar from './components/navbar/navbar';
+// import Navbar from './components/navbar/navbar';
 import Login from './components/login/login';
 import Register from './components/register/register';
 import FeedPage from './components/feed/FeedPage.js';
@@ -15,11 +13,18 @@ function App() {
       <div className="App">
         {/* <Navbar /> */}
         <Routes>
+<<<<<<< HEAD
           {/* <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} /> */}
            <Route path="/" element={<Login />} />
            <Route path="/FeedPage" element={<FeedPage />} />
 
+=======
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/FeedPage" element={<FeedPage />} />
+          <Route path="/ProfilePage" element={<ProfilePage />} />
+>>>>>>> main
         </Routes>
       </div>
     </Router>

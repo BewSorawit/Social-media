@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import { Card, Image, Row, Col } from "react-bootstrap";
+import "./ProfilePost.css"
 
 const PostList = ({posts,user}) => {
     return (
