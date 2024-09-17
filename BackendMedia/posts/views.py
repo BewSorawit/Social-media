@@ -178,7 +178,6 @@ class PostViewSet(viewsets.ViewSet):
     from django.db.models import Q
 
     def get_followed_posts(self, request, user_id=None):
-<<<<<<< HEAD
         # token = request.headers.get('Authorization')
         # print(f"Original token: {token}")
         # if token:
@@ -189,11 +188,6 @@ class PostViewSet(viewsets.ViewSet):
         #     if BlacklistedAccessToken.is_blacklisted(token):
         #         print(f"Token is blacklisted: {token}")
         #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
-        """Retrieve posts from users that the specified user is following."""
-        # ตรวจสอบว่าผู้ใช้ที่ระบุด้วย user_id มีอยู่
-        user = UserProfile.objects.filter(pk=user_id).first()
-        if not user:
-=======
 
         if not request.user.is_authenticated:
             return Response({'detail': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -201,7 +195,6 @@ class PostViewSet(viewsets.ViewSet):
         try:
             user = UserProfile.objects.get(pk=user_id)
         except UserProfile.DoesNotExist:
->>>>>>> 35ad1b9dfea16fd5d984446a589cfb730c1c25d4
             return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         following_users = UserFollow.objects.filter(
@@ -214,7 +207,6 @@ class PostViewSet(viewsets.ViewSet):
         )
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
-<<<<<<< HEAD
 
     def get_feed(self, request, user_id=None):
         # token = request.headers.get('Authorization')
@@ -248,5 +240,3 @@ class PostViewSet(viewsets.ViewSet):
         queryset = user_posts | followed_posts
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data)
-=======
->>>>>>> 35ad1b9dfea16fd5d984446a589cfb730c1c25d4
