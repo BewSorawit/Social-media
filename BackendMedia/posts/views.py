@@ -9,6 +9,12 @@ from .models import Post
 from .serializers import PostSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.db.models import Q
+
+from posts.models import Post
+from users.models import UserProfile
+from follows.models import UserFollow
+from posts.serializers import PostSerializer
 
 
 class PostViewSet(viewsets.ViewSet):
@@ -169,8 +175,10 @@ class PostViewSet(viewsets.ViewSet):
             return Response({'detail': 'Post deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Post.DoesNotExist:
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+    from django.db.models import Q
 
     def get_followed_posts(self, request, user_id=None):
+<<<<<<< HEAD
         # token = request.headers.get('Authorization')
         # print(f"Original token: {token}")
         # if token:
@@ -185,17 +193,28 @@ class PostViewSet(viewsets.ViewSet):
         # ตรวจสอบว่าผู้ใช้ที่ระบุด้วย user_id มีอยู่
         user = UserProfile.objects.filter(pk=user_id).first()
         if not user:
+=======
+
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            user = UserProfile.objects.get(pk=user_id)
+        except UserProfile.DoesNotExist:
+>>>>>>> 35ad1b9dfea16fd5d984446a589cfb730c1c25d4
             return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # ดึงรายการผู้ใช้ที่ user กำลังติดตาม
-        followed_users = UserFollow.objects.filter(
+        following_users = UserFollow.objects.filter(
             follower=user).values_list('followed', flat=True)
-
-        # ดึงโพสต์ทั้งหมดจากผู้ใช้ที่ติดตาม
+        mutual_followers = UserFollow.objects.filter(
+            follower__in=following_users, followed=user).values_list('follower', flat=True)
         posts = Post.objects.filter(
-            author__in=followed_users, visibility='public')
+            Q(visibility='public') |
+            (Q(author__in=mutual_followers) & Q(visibility='private'))
+        )
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+<<<<<<< HEAD
 
     def get_feed(self, request, user_id=None):
         # token = request.headers.get('Authorization')
@@ -229,3 +248,5 @@ class PostViewSet(viewsets.ViewSet):
         queryset = user_posts | followed_posts
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data)
+=======
+>>>>>>> 35ad1b9dfea16fd5d984446a589cfb730c1c25d4
