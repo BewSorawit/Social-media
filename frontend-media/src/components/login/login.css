@@ -9,11 +9,12 @@
   
   .login-form {
     background-color: white;
-    padding: 30px;
+    padding: 30px ;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
     padding-top: 0;
+    padding-bottom: 15px;
   }
   
   .login-form h2 {
@@ -52,6 +53,7 @@
     cursor: pointer;
     transition: background-color 0.3s;
     margin-top: 5px;
+    margin-bottom: 5px;
     box-sizing: border-box; /* ปรับให้ความกว้างรวมถึง padding และ border */
 }
 
@@ -67,4 +69,5 @@
 
   .login-form p{
     color: #758694;
+    margin: 0;
   }

@@ -1,11 +1,46 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./navbar.css";
+
 function Navbar() {
+  const [user, setUser] = useState({});
+  const userId = localStorage.getItem('id'); // ดึง userId จาก localStorage
+  const token = localStorage.getItem('token'); // ดึง token จาก localStorage
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        if (!token || !userId) {
+          console.error('No token or userId found. Please login.');
+          return;
+        }
+
+        // ดึงข้อมูล user จาก API
+        const response = await axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${userId}/`, {
+          headers: {
+            'Authorization': `Bearer ${token}` // ส่ง token ใน header
+          }
+        });
+
+        setUser(response.data.data); // เก็บข้อมูล user
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [userId, token]);
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">Hurry Feed</div>
       <div className="navbar-right">
         <input type="text" className="navbar-search" placeholder="Search" />
-        <img src="/logo512.png" alt="Profile" className="navbar-profile" />
+        <img
+          src={user.profile_picture ? `http://127.0.0.1:8000${user.profile_picture}` : "/profileDefault.jpg"}
+          alt="Profile"
+          className="navbar-profile"
+        />
       </div>
     </nav>
   );

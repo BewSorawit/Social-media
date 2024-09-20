@@ -24,7 +24,7 @@ function Login() {
         localStorage.setItem("token", response.data.access);
 
         // นำทางไปที่หน้า Feed
-        navigate("/ProfilePage");
+        navigate("/FeedPage");
       } else {
         setErrorMessage("Login failed! Please check your credentials.");
       }
