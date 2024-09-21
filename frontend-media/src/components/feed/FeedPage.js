@@ -163,7 +163,7 @@ function FeedPage() {
                     <Card className="post">
                         <Card.Body>
                             <div className="post-header">
-                                <img src={userProfile && userProfile.profile_picture ? `http://127.0.0.1:8000${userProfile.profile_picture}` : image} alt="User Avatar" className="avatar" />
+                                <img src={userProfile && userProfile.profile_picture ? `http://127.0.0.1:8000${userProfile.profile_picture}` : "/profileDefault.jpg"} alt="User Avatar" className="avatar" />
                                 <Form.Control type="text" placeholder="Write a comment..." />
                             </div>
                             <Button className="create-post-btn" onClick={handlePostClick}>
