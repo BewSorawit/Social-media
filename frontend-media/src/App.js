@@ -25,7 +25,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/FeedPage" element={<FeedPage />} />
-          <Route path="/FeedPagePrivate" element={<FeedPagePrivate />} />
+          {/* <Route path="/FeedPagePrivate" element={<FeedPagePrivate />} /> */}
           <Route path="/ProfilePage" element={<ProfilePage />} />
           <Route path="/ProfileFriendPage" element={<ProfileFriendPage />} />
         </Routes>

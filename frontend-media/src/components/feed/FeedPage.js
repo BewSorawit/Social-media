@@ -11,38 +11,31 @@ function FeedPage() {
     const [showPopup, setShowPopup] = useState(false);
     const [postContent, setPostContent] = useState('');
     const [posts, setPosts] = useState([]);
-    const [userProfile, setUserProfile] = useState(null); 
+    const [userProfile, setUserProfile] = useState(null);
     const [postVisibility, setPostVisibility] = useState('public');
     const [selectedImage, setSelectedImage] = useState(null);
     const [userProfiles, setUserProfiles] = useState({});
-    const [postFilter, setPostFilter] = useState('all'); 
-
+    const [filter, setFilter] = useState('all');  // เพิ่ม state สำหรับ filter (all, friends)
+    
     const userId = localStorage.getItem('id');
+    const token = localStorage.getItem('token');
 
     const handlePostClick = () => {
         setShowPopup(true);
-    };
-
-    const handleClosePopup = () => {
-        setShowPopup(false);
         setPostContent('');
         setSelectedImage(null);
         setPostVisibility('public');
     };
 
+    const handleClosePopup = () => setShowPopup(false);
+
     const handlePostSubmit = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
+        if (!token) return console.error('No token found');
 
         const formData = new FormData();
         formData.append('content', postContent);
         formData.append('visibility', postVisibility);
-        if (selectedImage) {
-            formData.append('image', selectedImage);
-        }
+        if (selectedImage) formData.append('image', selectedImage);
 
         axios.post('http://localhost:8000/hurry-feed/posts/create/', formData, {
             headers: {
@@ -51,104 +44,94 @@ function FeedPage() {
             }
         })
         .then(response => {
-            console.log('Post created successfully:', response.data);
-            fetchPosts(); // Refresh the posts after creating a new one
-            handleClosePopup();
+            setShowPopup(false);
+            fetchPostsByFilter();  // โหลดโพสต์ใหม่ตาม filter ที่เลือก
         })
-        .catch(error => {
-            console.error('Error creating post:', error);
-        });
+        .catch(error => console.error('Error posting data!', error));
     };
 
-    const fetchPosts = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
+    const fetchPublicPosts = () => {
+        if (!token) return console.error('No token found');
 
-        const endpoint = postFilter === 'friends' 
-            ? 'http://localhost:8000/hurry-feed/posts/private/' 
-            : 'http://localhost:8000/hurry-feed/posts/public/';
-    
-        axios.get(endpoint, { headers: { 'Authorization': `Bearer ${token}` } })
-            .then(response => {
-                setPosts(response.data);
-                response.data.forEach(post => {
-                    fetchUserProfileById(post.author);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching posts:', error);
-            });
+        axios.get('http://localhost:8000/hurry-feed/posts/public/', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(response => {
+            setPosts(response.data);  // ตั้งค่าโพสต์ใหม่
+            response.data.forEach(post => fetchUserProfileById(post.author));
+        })
+        .catch(error => console.error('Error fetching posts:', error));
+    };
+
+    const fetchPrivatePosts = () => {
+        if (!token) return console.error('No token found');
+
+        axios.get('http://localhost:8000/hurry-feed/posts/private/', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(response => {
+            setPosts(response.data);  // ตั้งค่าโพสต์ใหม่
+            response.data.forEach(post => fetchUserProfileById(post.author));
+        })
+        .catch(error => console.error('Error fetching private posts:', error));
+    };
+
+    // Function สำหรับเรียก API ตาม filter
+    const fetchPostsByFilter = () => {
+        if (filter === 'all') {
+            fetchPublicPosts();
+        } else if (filter === 'friends') {
+            fetchPrivatePosts();
+        }
     };
 
     const fetchUserProfile = () => {
-        const token = localStorage.getItem('token');
+        if (!token || !userId) return console.error('No token or user ID found');
 
-        if (!token || !userId) {
-            console.error('No token or user ID found');
-            return;
-        }
-
-        axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${userId}/`, 
-            { headers: { 'Authorization': `Bearer ${token}` } }
-        )
-        .then(response => {
-            setUserProfile(response.data.data);
+        axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${userId}/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
         })
-        .catch(error => {
-            console.error('Error fetching user profile:', error);
-        });
+        .then(response => setUserProfile(response.data.data))
+        .catch(error => console.error('Error fetching user profile:', error));
     };
 
     const fetchUserProfileById = (authorId) => {
-        const token = localStorage.getItem('token');
+        if (!token || userProfiles[authorId]) return;
 
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
-
-        if (userProfiles[authorId]) {
-            return;
-        }
-
-        axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${authorId}/`, 
-            { headers: { 'Authorization': `Bearer ${token}` } }
-        )
+        axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${authorId}/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         .then(response => {
             setUserProfiles(prevProfiles => ({
                 ...prevProfiles,
                 [authorId]: response.data.data
             }));
         })
-        .catch(error => {
-            console.error('Error fetching user profile:', error);
-        });
+        .catch(error => console.error('Error fetching user profile:', error));
     };
 
     useEffect(() => {
-        fetchPosts();
+        fetchPostsByFilter();  // โหลดโพสต์ตาม filter ตอน component mount
         fetchUserProfile();
-    }, [postFilter]); 
+    }, [filter]);  // Re-fetch posts เมื่อ filter เปลี่ยนแปลง
 
     return (
         <Container>
             <Row>
                 <Col md={2} className="sidebar">
                     <ul>
-                        <Form.Group controlId="postFilter">
-                            <Form.Label>Filter Posts</Form.Label>
-                            <Form.Control 
-                                as="select" 
-                                value={postFilter} 
-                                onChange={(e) => setPostFilter(e.target.value)}
-                            >
-                                <option value="all">ทั้งหมด</option>
-                                <option value="friends">เพื่อน</option>
-                            </Form.Control>
-                        </Form.Group>
+                         {/* Dropdown filter */}
+                    <Form.Group controlId="filterDropdown">
+                        <Form.Label>Show Posts From</Form.Label>
+                        <Form.Control 
+                            as="select" 
+                            value={filter} 
+                            onChange={(e) => setFilter(e.target.value)}
+                        >
+                            <option value="all">All</option>
+                            <option value="friends">Friends</option>
+                        </Form.Control>
+                    </Form.Group>
                         <li>
                             <Link to="/">
                                 <FontAwesomeIcon icon={faNewspaper} /> Feed
@@ -161,17 +144,16 @@ function FeedPage() {
                         </li>
                         <li>
                             <Link to="/settings">
-                                <FontAwesomeIcon icon={faCog} /> Setting
+                                <FontAwesomeIcon icon={faCog} /> Settings
                             </Link>
                         </li>
                     </ul>
                 </Col>
-                
                 <Col md={8} className="feed-content">
                     <Card className="post">
                         <Card.Body>
                             <div className="post-header">
-                                <img src={userProfile && userProfile.profile_picture ? `http://127.0.0.1:8000${userProfile.profile_picture}` : "/profileDefault.jpg"} alt="User Avatar" className="avatar" />
+                                <img src={userProfile?.profile_picture ? `http://127.0.0.1:8000${userProfile.profile_picture}` : image} alt="User Avatar" className="avatar" />
                                 <Form.Control type="text" placeholder="Write a comment..." />
                             </div>
                             <Button className="create-post-btn" onClick={handlePostClick}>
@@ -181,40 +163,33 @@ function FeedPage() {
                     </Card>
 
                     {posts.map(post => (
-                        <Card className="post" key={post.id}>
+                        <Card key={post.post_id} className="post">
                             <Card.Body>
                                 <div className="post-header">
                                     <img 
-                                        src={userProfiles[post.author]?.profile_picture 
-                                            ? `http://127.0.0.1:8000${userProfiles[post.author].profile_picture}` 
-                                            : image} 
+                                        src={userProfiles[post.author]?.profile_picture ? `http://127.0.0.1:8000${userProfiles[post.author].profile_picture}` : image} 
                                         alt="Post User Avatar" 
                                         className="avatar" 
                                     />
                                     <div className="post-details">
-                                        <h3>{userProfiles[post.author] 
-                                            ? `${userProfiles[post.author].first_name} ${userProfiles[post.author].last_name}` 
-                                            : 'Unknown User'}</h3>
+                                        <h3>{userProfiles[post.author] ? `${userProfiles[post.author].first_name} ${userProfiles[post.author].last_name}` : 'Unknown User'}</h3>
                                         <p className="post-date">
-                                            {new Date(post.created_at).toLocaleDateString()} {new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {new Date(post.created_at).toLocaleDateString('en-GB')} {new Date(post.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                                         </p>
+
                                     </div>
                                 </div>
 
                                 {post.image && (
                                     <div className="post-image">
-                                        <img 
-                                            src={`http://127.0.0.1:8000${post.image}`} 
-                                            alt="Post content" 
-                                        />
+                                        <img src={`http://127.0.0.1:8000${post.image}`} alt="Post content" />
                                     </div>
                                 )}
 
                                 <Card.Text>{post.content}</Card.Text>
                                 <div className="post-actions">
                                     <Button variant="primary"><FontAwesomeIcon icon={faThumbsUp} /></Button>
-                                    <Form.Control type="text" placeholder="Write a comment..." />
-                                    <Button variant="primary"><FontAwesomeIcon icon={faCommentAlt} /></Button>
+                                    
                                 </div>
                             </Card.Body>
                         </Card>
@@ -222,7 +197,6 @@ function FeedPage() {
                 </Col>
             </Row>
 
-            {/* Modal สำหรับสร้างโพสต์ */}
             <Modal show={showPopup} onHide={handleClosePopup}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create a Post</Modal.Title>
@@ -239,7 +213,6 @@ function FeedPage() {
                             />
                         </Form.Group>
                         <Form.Group controlId="postVisibility">
-                            <Form.Label>Post Visibility</Form.Label>
                             <Form.Control 
                                 as="select" 
                                 value={postVisibility} 
