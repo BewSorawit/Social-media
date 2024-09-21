@@ -61,12 +61,12 @@
     outline: none;
   }
   
-  button {
+  .register-form button {
     padding: 10px;
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 20px;
+    border-radius: 80px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -84,21 +84,6 @@
     height: 45px;
   }
 
-  .btn-success {
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    border: none;
-    border-radius: 20px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
-
-  .btn-success:hover {
-    background-color: #218838;
-  }
-
   .btn-login{
     margin-left: 5px;
     color:#7F93FB;
@@ -109,4 +94,6 @@
   .register-form p{
     margin-top: 0;
     color: #758694;
+    align-self: center;
+    margin: 0;
   }

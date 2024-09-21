@@ -25,6 +25,7 @@ function Login() {
 
         // นำทางไปที่หน้า Feed
         navigate("/FeedPage");
+        navigate("/FeedPage");
       } else {
         setErrorMessage("Login failed! Please check your credentials.");
       }
@@ -56,6 +57,7 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)} // เก็บค่า password
           />
         </div>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         
         <button className="login-button" onClick={handleLogin}>Login</button>
         <p>

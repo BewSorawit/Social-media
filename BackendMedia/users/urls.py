@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UsersViewSet, LoginViewSet, UserProfileUpdateAPIViewSet, CreateUsersViewSet
+from .views import LogoutView, UserSearchView, UsersViewSet, LoginViewSet, UserProfileUpdateAPIViewSet, CreateUsersViewSet
 # from .views import register_user
 
 urlpatterns = [
@@ -9,4 +9,6 @@ urlpatterns = [
     path('user_profile/update/<int:id>/',
          UserProfileUpdateAPIViewSet.as_view()),
     path('login/', LoginViewSet.as_view(), name='login'),
+    path('search/', UserSearchView.as_view(), name='user-search'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

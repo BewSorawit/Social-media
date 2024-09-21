@@ -1,15 +1,14 @@
-# follows/urls.py
 from django.urls import path
 from .views import UserFollowViewSet
 
 urlpatterns = [
-    #     คนที่กำลังติดตาม
+    #    id นั้นกำลังติดตามใครอยู่
     path('<int:user_id>/following/',
          UserFollowViewSet.as_view({'get': 'get_following'}), name='user-following'),
-    #    คนที่ติดตาม
+    #    id นั้นกำลังถูกใครติดตาม
     path('<int:user_id>/followers/',
          UserFollowViewSet.as_view({'get': 'get_followers'}), name='user-followers'),
-    #    ติดตามกันละกัน
+    #    สร้างการติดตาม
     path('<int:user_id>/follow/',
          UserFollowViewSet.as_view({'post': 'follow'}), name='follow-user'),
     path('<int:user_id>/unfollow/',

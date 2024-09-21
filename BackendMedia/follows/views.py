@@ -5,12 +5,22 @@ from rest_framework.permissions import IsAuthenticated
 from users.models import UserProfile
 from .models import UserFollow
 from .serializers import UserProfileSerializer
-
+# from users.models import BlacklistedAccessToken
 
 class UserFollowViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_following(self, request, user_id=None):
+         # token = request.headers.get('Authorization')
+        # print(f"Original token: {token}")
+        # if token:
+        #     if token.startswith('Bearer '):
+        #         token = token[len('Bearer '):]
+        #     print(f"Processed token: {token}")
+
+        #     if BlacklistedAccessToken.is_blacklisted(token):
+        #         print(f"Token is blacklisted: {token}")
+        #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
         """Get users that the specified user is following."""
         try:
             user = UserProfile.objects.get(pk=user_id)
@@ -23,6 +33,16 @@ class UserFollowViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def get_followers(self, request, user_id=None):
+         # token = request.headers.get('Authorization')
+        # print(f"Original token: {token}")
+        # if token:
+        #     if token.startswith('Bearer '):
+        #         token = token[len('Bearer '):]
+        #     print(f"Processed token: {token}")
+
+        #     if BlacklistedAccessToken.is_blacklisted(token):
+        #         print(f"Token is blacklisted: {token}")
+        #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
         """Get users that are following the specified user."""
         try:
             user = UserProfile.objects.get(pk=user_id)
@@ -35,6 +55,16 @@ class UserFollowViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def follow(self, request, user_id=None):
+         # token = request.headers.get('Authorization')
+        # print(f"Original token: {token}")
+        # if token:
+        #     if token.startswith('Bearer '):
+        #         token = token[len('Bearer '):]
+        #     print(f"Processed token: {token}")
+
+        #     if BlacklistedAccessToken.is_blacklisted(token):
+        #         print(f"Token is blacklisted: {token}")
+        #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
         """Follow a user."""
         if not request.user.is_authenticated:
             return Response({'detail': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -52,6 +82,16 @@ class UserFollowViewSet(viewsets.ViewSet):
         return Response({'detail': 'Followed successfully.'}, status=status.HTTP_201_CREATED)
 
     def unfollow(self, request, user_id=None):
+         # token = request.headers.get('Authorization')
+        # print(f"Original token: {token}")
+        # if token:
+        #     if token.startswith('Bearer '):
+        #         token = token[len('Bearer '):]
+        #     print(f"Processed token: {token}")
+
+        #     if BlacklistedAccessToken.is_blacklisted(token):
+        #         print(f"Token is blacklisted: {token}")
+        #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
         """Unfollow a user."""
         if not request.user.is_authenticated:
             return Response({'detail': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
