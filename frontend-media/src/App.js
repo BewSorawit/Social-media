@@ -13,18 +13,15 @@ function App() {
       <div className="App">
         {/* <Navbar /> */}
         <Routes>
-<<<<<<< HEAD
           {/* <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} /> */}
            <Route path="/" element={<Login />} />
            <Route path="/FeedPage" element={<FeedPage />} />
 
-=======
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/FeedPage" element={<FeedPage />} />
           <Route path="/ProfilePage" element={<ProfilePage />} />
->>>>>>> main
         </Routes>
       </div>
     </Router>
