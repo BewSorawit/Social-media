@@ -14,6 +14,7 @@ function FeedPage() {
     const [userProfile, setUserProfile] = useState(null); 
     const [postVisibility, setPostVisibility] = useState('public');
     const [selectedImage, setSelectedImage] = useState(null);
+    const [userProfiles, setUserProfiles] = useState({}); // เก็บข้อมูลโปรไฟล์ของผู้เขียนโพสต์แต่ละคน
 
     const userId = localStorage.getItem('id');
 
@@ -42,9 +43,6 @@ function FeedPage() {
             formData.append('image', selectedImage);
         }
 
-        // แสดงข้อมูลที่ส่งไปยังเซิร์ฟเวอร์เพื่อการตรวจสอบ
-        console.log('FormData:', formData.get('content'), formData.get('visibility'), formData.get('image'));
-
         axios.post('http://localhost:8000/hurry-feed/posts/create/', 
           formData,
           { headers: { 
@@ -62,35 +60,26 @@ function FeedPage() {
             fetchPosts();
         })
         .catch(error => {
-            // เพิ่มการแสดงข้อผิดพลาดที่ละเอียดขึ้น
-            if (error.response) {
-                console.error('Error data:', error.response.data); // ข้อมูลที่ส่งกลับมาจากเซิร์ฟเวอร์
-                console.error('Error status:', error.response.status); // สถานะ HTTP
-                console.error('Error headers:', error.response.headers); // Headers
-            } else if (error.request) {
-                console.error('Error request:', error.request);
-            } else {
-                console.error('Error message:', error.message);
-            }
             console.error('There was an error posting the data!', error);
         });
     };
 
     const fetchPosts = () => {
         const token = localStorage.getItem('token');
-        console.log('Token on fetch:', token);
-
+    
         if (!token) {
             console.error('No token found');
             return;
         }
-
+    
         axios.get('http://localhost:8000/hurry-feed/posts/public/', 
           { headers: { 'Authorization': `Bearer ${token}` } }
         )
         .then(response => {
-            console.log('Posts fetched:', response.data);
             setPosts(response.data);
+            response.data.forEach(post => {
+                fetchUserProfileById(post.author); // ดึงข้อมูลโปรไฟล์ของผู้เขียนแต่ละคน
+            });
         })
         .catch(error => {
             console.error('Error fetching posts:', error);
@@ -109,11 +98,37 @@ function FeedPage() {
           { headers: { 'Authorization': `Bearer ${token}` } }
         )
         .then(response => {
-          console.log('User profile fetched:', response.data.data);
           setUserProfile(response.data.data);
         })
         .catch(error => {
           console.error('Error fetching user profile:', error);
+        });
+    };
+
+    const fetchUserProfileById = (authorId) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
+        // เช็คว่ามีข้อมูลโปรไฟล์ผู้เขียนอยู่แล้วหรือไม่ เพื่อไม่ให้ดึงข้อมูลซ้ำ
+        if (userProfiles[authorId]) {
+            return;
+        }
+
+        axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${authorId}/`, 
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        )
+        .then(response => {
+            setUserProfiles(prevProfiles => ({
+                ...prevProfiles,
+                [authorId]: response.data.data
+            }));
+        })
+        .catch(error => {
+            console.error('Error fetching user profile:', error);
         });
     };
 
@@ -157,43 +172,45 @@ function FeedPage() {
                         </Card.Body>
                     </Card>
 
-                    {userProfile && (
-                        <div>
-                            {/* แสดงข้อมูลอื่น ๆ ที่คุณต้องการ */}
-                        </div>
-                    )}
+                    {posts.map(post => (
+                        <Card key={post.post_id} className="post">
+                            <Card.Body>
+                                <div className="post-header">
+                                    <img 
+                                        src={userProfiles[post.author] && userProfiles[post.author].profile_picture 
+                                            ? `http://127.0.0.1:8000${userProfiles[post.author].profile_picture}` 
+                                            : image} 
+                                        alt="Post User Avatar" 
+                                        className="avatar" 
+                                    />
+                                    <div className="post-details">
+                                        <h3>{userProfiles[post.author] 
+                                            ? `${userProfiles[post.author].first_name} ${userProfiles[post.author].last_name}` 
+                                            : 'Unknown User'}
+                                        </h3>
+                                        <p>Posted by {userProfiles[post.author] ? userProfiles[post.author].username : 'Unknown'}</p>
+                                    </div>
+                                </div>
 
-{posts.map(post => (
-    <Card key={post.id} className="post">
-        <Card.Body>
-            <div className="post-header">
-                <img src={image} alt="Post User Avatar" />
-                <div className="post-details">
-                    <h3>{post.title || 'Untitled'}</h3>
-                    <p>Posted by {post.author.username}</p>
-                </div>
-            </div>
-            
-            {/* เพิ่มการแสดงรูปของโพสต์ */}
-            {post.image && (
-                <div className="post-image">
-                    <img 
-                        src={`http://127.0.0.1:8000${post.image}`} 
-                        alt="Post content" 
-                        style={{ width: '100%', height: 'auto', marginTop: '10px' }}
-                    />
-                </div>
-            )}
+                                {post.image && (
+                                    <div className="post-image">
+                                        <img 
+                                            src={`http://127.0.0.1:8000${post.image}`} 
+                                            alt="Post content" 
+                                            style={{ width: '100%', height: 'auto', marginTop: '10px' }}
+                                        />
+                                    </div>
+                                )}
 
-            <Card.Text>{post.content}</Card.Text>
-            <div className="post-actions">
-                <Button variant="primary"><FontAwesomeIcon icon={faThumbsUp} /></Button>
-                <Form.Control type="text" placeholder="Write a comment..." />
-                <Button variant="primary"><FontAwesomeIcon icon={faCommentAlt} /></Button>
-            </div>
-        </Card.Body>
-    </Card>
-))}
+                                <Card.Text>{post.content}</Card.Text>
+                                <div className="post-actions">
+                                    <Button variant="primary"><FontAwesomeIcon icon={faThumbsUp} /></Button>
+                                    <Form.Control type="text" placeholder="Write a comment..." />
+                                    <Button variant="primary"><FontAwesomeIcon icon={faCommentAlt} /></Button>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    ))}
 
                 </Col>
             </Row>
