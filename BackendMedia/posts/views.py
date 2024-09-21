@@ -42,6 +42,29 @@ class PostViewSet(viewsets.ViewSet):
         manual_parameters=[openapi.Parameter(
             'author_id', openapi.IN_PATH, description="Author ID", type=openapi.TYPE_INTEGER)]
     )
+
+    def list_private(self, request):
+        # token = request.headers.get('Authorization')
+        # print(f"Original token: {token}")
+        # if token:
+        #     if token.startswith('Bearer '):
+        #         token = token[len('Bearer '):]
+        #     print(f"Processed token: {token}")
+
+        #     if BlacklistedAccessToken.is_blacklisted(token):
+        #         print(f"Token is blacklisted: {token}")
+        #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
+        """List all private posts."""
+        queryset = Post.objects.filter(visibility='private')
+        serializer = PostSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(
+        responses={200: PostSerializer(many=True)},
+        manual_parameters=[openapi.Parameter(
+            'author_id', openapi.IN_PATH, description="Author ID", type=openapi.TYPE_INTEGER)]
+    )
+
     def list_public_by_author(self, request, author_id=None):
         # token = request.headers.get('Authorization')
         # print(f"Original token: {token}")
@@ -58,6 +81,28 @@ class PostViewSet(viewsets.ViewSet):
             author_id=author_id, visibility='public')
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def list_public_and_private_by_author(self, request, author_id=None):
+        # token = request.headers.get('Authorization')
+        # print(f"Original token: {token}")
+        # if token:
+        #     if token.startswith('Bearer '):
+        #         token = token[len('Bearer '):]
+        #     print(f"Processed token: {token}")
+
+        #     if BlacklistedAccessToken.is_blacklisted(token):
+        #         print(f"Token is blacklisted: {token}")
+        #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
+        """List public and private posts by a specific author."""
+        queryset = Post.objects.filter(author_id=author_id, visibility='public')
+        
+        if request.user.is_authenticated:
+            queryset_private = Post.objects.filter(author_id=author_id, visibility='private')
+        
+        queryset = queryset | queryset_private
+        serializer = PostSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
 
     def list_all(self, request):
         # token = request.headers.get('Authorization')
