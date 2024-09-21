@@ -65,8 +65,8 @@ function FeedPage() {
 
     const fetchPrivatePosts = () => {
         if (!token) return console.error('No token found');
-
-        axios.get('http://localhost:8000/hurry-feed/posts/private/', {
+    
+        axios.get('http://localhost:8000/hurry-feed/posts/privates/', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(response => {
@@ -75,15 +75,16 @@ function FeedPage() {
         })
         .catch(error => console.error('Error fetching private posts:', error));
     };
-
+    
     // Function สำหรับเรียก API ตาม filter
     const fetchPostsByFilter = () => {
         if (filter === 'all') {
             fetchPublicPosts();
         } else if (filter === 'friends') {
-            fetchPrivatePosts();
+            fetchPrivatePosts();  // ดึงโพสต์ส่วนตัวทั้งหมด
         }
     };
+    
 
     const fetchUserProfile = () => {
         if (!token || !userId) return console.error('No token or user ID found');
@@ -120,7 +121,7 @@ function FeedPage() {
             <Row>
                 <Col md={2} className="sidebar">
                     <ul>
-                         {/* Dropdown filter */}
+                        {/* Dropdown filter */}
                     <Form.Group controlId="filterDropdown">
                         <Form.Label>Show Posts From</Form.Label>
                         <Form.Control 
@@ -150,6 +151,7 @@ function FeedPage() {
                     </ul>
                 </Col>
                 <Col md={8} className="feed-content">
+
                     <Card className="post">
                         <Card.Body>
                             <div className="post-header">
