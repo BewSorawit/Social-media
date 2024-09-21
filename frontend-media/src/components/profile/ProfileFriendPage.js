@@ -10,11 +10,12 @@ const ProfileFriendPage = () => {
   const [user, setUser] = useState({});
   const [isFollowing, setIsFollowing] = useState(false); // Track following status
   const token = localStorage.getItem('token'); // Get token from localStorage
+  const loggedInUserId = localStorage.getItem('id'); // User ID ของคนที่ล็อกอิน
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        if (!token || !userId) {
+        if (!token || !userId || !loggedInUserId) {
           console.error('No token or userId found. Please login.');
           return;
         }
@@ -28,12 +29,11 @@ const ProfileFriendPage = () => {
             },
           }
         );
-
         setUser(userResponse.data.data); // Store user data
 
-        // ตรวจสอบสถานะการติดตาม
+        // ดึงรายชื่อคนที่ผู้ใช้ล็อกอินติดตาม
         const followingResponse = await axios.get(
-          `http://127.0.0.1:8000/hurry-feed/userfollow/${userId}/followers/`,
+          `http://127.0.0.1:8000/hurry-feed/userfollow/${loggedInUserId}/following/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -41,30 +41,47 @@ const ProfileFriendPage = () => {
           }
         );
 
-        // เช็คว่าผู้ใช้ติดตามอยู่หรือไม่
-        setIsFollowing(followingResponse.data.includes(userId)); // ปรับให้เหมาะสมกับ API ของคุณ
+        // ตรวจสอบว่าคนที่เราดูโปรไฟล์ (userId) อยู่ในรายชื่อที่เราติดตามหรือไม่
+        const isFollowingUser = followingResponse.data.some(
+          (followedUser) => followedUser.id === userId
+        );
+        setIsFollowing(isFollowingUser); // อัปเดตสถานะการติดตาม
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchUserData();
-  }, [userId, token]);
+  }, [userId, loggedInUserId, token]);
 
-  const handleFollow = async () => {
+  const handleFollowToggle = async () => {
     try {
-      await axios.post(
-        `http://127.0.0.1:8000/hurry-feed/userfollow/${userId}/follow/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setIsFollowing(true); // Update following status
+      if (isFollowing) {
+        // ถ้าติดตามอยู่ ให้ Unfollow ด้วย DELETE request
+        await axios.delete(
+          `http://127.0.0.1:8000/hurry-feed/userfollow/${userId}/unfollow/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsFollowing(false); // อัปเดตสถานะเป็น Unfollow
+      } else {
+        // ถ้ายังไม่ได้ติดตาม ให้ Follow ด้วย POST request
+        await axios.post(
+          `http://127.0.0.1:8000/hurry-feed/userfollow/${userId}/follow/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsFollowing(true); // อัปเดตสถานะเป็น Follow
+      }
     } catch (error) {
-      console.error('Error following user:', error);
+      console.error('Error following/unfollowing user:', error);
     }
   };
 
@@ -85,9 +102,9 @@ const ProfileFriendPage = () => {
               <div className="profile-actions">
                 <Button 
                   variant={isFollowing ? "secondary" : "primary"}
-                  onClick={handleFollow}
+                  onClick={handleFollowToggle}
                 >
-                  {isFollowing ? "Following" : "Follow"}
+                  {isFollowing ? "Unfollow" : "Follow"}
                 </Button>
               </div>
             </div>
