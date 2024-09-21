@@ -5,7 +5,7 @@ urlpatterns = [
 
     # เห็นโพสต์ทั้งหมดที่เป็น public
     path('public/', PostViewSet.as_view({'get': 'list_public'})),
-    path('private/', PostViewSet.as_view({'get': 'list_private'})),
+    path('privates/', PostViewSet.as_view({'get': 'list_privates'})),
 
     # แสดงรายการโพสต์ public โดยผู้เขียนคนใดคนหนึ่ง
     path('public/by_author/<int:author_id>/',
