@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { Dropdown, FormControl } from "react-bootstrap"; // นำเข้า react-bootstrap
 import "./navbar.css";
 
 function Navbar() {
   const [user, setUser] = useState({});
-  const userId = localStorage.getItem('id'); // ดึง userId จาก localStorage
-  const token = localStorage.getItem('token'); // ดึง token จาก localStorage
+  const userId = localStorage.getItem('id'); // Get userId from localStorage
+  const token = localStorage.getItem('token'); // Get token from localStorage
   const navigate = useNavigate();
-  const [searchUsername, setSearchUsername] = useState({ q: '' });
+  const [searchQuery, setSearchQuery] = useState(''); // To store the search input
+  const [searchResults, setSearchResults] = useState([]); // To store search results
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -19,14 +20,14 @@ function Navbar() {
           return;
         }
 
-        // ดึงข้อมูล user จาก API
+        // Fetch user data from API
         const response = await axios.get(`http://127.0.0.1:8000/hurry-feed/users/user_profile/${userId}/`, {
           headers: {
-            'Authorization': `Bearer ${token}` // ส่ง token ใน header
+            'Authorization': `Bearer ${token}` // Send token in header
           }
         });
 
-        setUser(response.data.data); // เก็บข้อมูล user
+        setUser(response.data.data); // Store user data
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -35,35 +36,43 @@ function Navbar() {
     fetchUserData();
   }, [userId, token]);
 
-  // ฟังก์ชันสำหรับคลิกที่โลโก้เพื่อกลับไปหน้า FeedPage
+  // Function to navigate to FeedPage when logo is clicked
   const handleLogoClick = () => {
     navigate('/FeedPage');
   };
 
-  // ฟังก์ชันเมื่อพิมพ์ในช่องค้นหา
-  const handleSearch = (e) => {
-    setSearchUsername({ q: e.target.value });
+  const handleProfileClick = () => {
+    navigate('/ProfilePage');
   };
 
-  // ฟังก์ชันเมื่อกด Enter เพื่อค้นหา
-  const handleKeyDown = async (e) => {
-    if (e.key === 'Enter' && searchUsername.q) {
+  // Handle search input change
+  const handleSearch = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/hurry-feed/users/search/?q=${searchUsername.q}`, {
+        const response = await axios.get(`http://127.0.0.1:8000/hurry-feed/users/search/?q=${query}`, {
           headers: {
-            'Authorization': `Bearer ${token}` // ส่ง token ใน header
+            'Authorization': `Bearer ${token}` // Send token in header
           }
         });
 
-        if (response.data.length > 0) {
-          const foundUser = response.data[0];
-          navigate(`/profile/${foundUser.username}`); // เปลี่ยนเส้นทางไปยังหน้า ProfilePage ของผู้ใช้  เปลี่ยนนนนนนนน
-        } else {
-          alert("No user found");
-        }
+        setSearchResults(response.data); // Store search results
       } catch (error) {
         console.error("Error searching for user:", error);
       }
+    } else {
+      setSearchResults([]); // Clear search results if no input
+    }
+  };
+
+  // Function to handle user selection and navigate based on userId
+  const handleSelectUser = (selectedUserId) => {
+    if (selectedUserId === Number(userId)) {
+      navigate('/ProfilePage'); // Navigate to ProfilePage if it's the current user
+    } else {
+      navigate('/ProfileFriendPage', { state: { userId: selectedUserId } }); // Pass userId via state to ProfileFriendPage
     }
   };
 
@@ -73,14 +82,23 @@ function Navbar() {
         Hurry Feed
       </div>
       <div className="navbar-right">
-        <input 
-          type="text" 
-          className="navbar-search" 
-          placeholder="Search" 
-          value={searchUsername.q}
-          onChange={handleSearch}
-          onKeyDown={handleKeyDown}
-        />
+        <Dropdown>
+          <Dropdown.Toggle variant="light" id="dropdown-basic" as={FormControl} // ใช้ FormControl เป็น Toggle
+            placeholder="Search"
+            value={searchQuery}
+            onChange={handleSearch} />
+
+          {searchResults.length > 0 && (
+            <Dropdown.Menu>
+              {searchResults.map((result) => (
+                <Dropdown.Item key={result.id} onClick={() => handleSelectUser(result.id)}>
+                  {result.first_name} {result.last_name}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          )}
+        </Dropdown>
+
         <img
           src={user.profile_picture ? `http://127.0.0.1:8000${user.profile_picture}` : "/profileDefault.jpg"}
           alt="Profile"
