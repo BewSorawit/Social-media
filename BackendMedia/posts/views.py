@@ -43,7 +43,7 @@ class PostViewSet(viewsets.ViewSet):
             'author_id', openapi.IN_PATH, description="Author ID", type=openapi.TYPE_INTEGER)]
     )
 
-    def list_private(self, request):
+    def list_privates(self, request):
         # token = request.headers.get('Authorization')
         # print(f"Original token: {token}")
         # if token:
@@ -95,7 +95,7 @@ class PostViewSet(viewsets.ViewSet):
         #         return Response({"detail": "Token has been blacklisted"}, status=status.HTTP_403_FORBIDDEN)
         """List public and private posts by a specific author."""
         queryset = Post.objects.filter(author_id=author_id, visibility='public')
-        
+
         if request.user.is_authenticated:
             queryset_private = Post.objects.filter(author_id=author_id, visibility='private')
         
