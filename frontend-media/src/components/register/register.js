@@ -101,7 +101,6 @@ function Register() {
           <label>Confirm Password:</label>
           <input
             type="password"
-            className="form-control"
             name="confirmPassword"
             value={formData.confirmPassword || ''}
             onChange={handleChange}
@@ -136,7 +135,7 @@ function Register() {
             </select>
           </div>
           </div>
-        <button type="submit" className='btn btn-success'>Register</button>
+        <button type="submit">Register</button>
         <p>
           Already have an account?
           <a className="btn-login" onClick={handleLogin}>Login</a>
