@@ -5,7 +5,8 @@ import Login from './components/login/login';
 import Register from './components/register/register';
 import FeedPage from './components/feed/FeedPage.js';
 import ProfilePage from './components/profile/ProfilePage.js';
-import PostList from './components/profile/ProfilePostPage.js';
+import ProfileFriendPage from './components/profile/ProfileFriendPage.js';
+// import PostList from './components/profile/ProfilePostPage.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/FeedPage" element={<FeedPage />} />
           <Route path="/ProfilePage" element={<ProfilePage />} />
+          <Route path="/ProfileFriendPage" element={<ProfileFriendPage />} />
         </Routes>
       </div>
   );

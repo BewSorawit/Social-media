@@ -73,7 +73,7 @@ const ProfilePage = () => {
                 <Row className="justify-content-center">
                     <Col xs={12} md={4} className="text-center">
                         <Image
-                            src={`http://127.0.0.1:8000${user.profile_picture}`}
+                            src={user.profile_picture ? `http://127.0.0.1:8000${user.profile_picture}` : "/profileDefault.jpg"}
                             roundedCircle
                             className="profile-photo"
                         />

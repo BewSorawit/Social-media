@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./navbar.css";
 
 function Navbar() {
   const [user, setUser] = useState({});
-  const userId = localStorage.getItem('id'); // ดึง userId จาก localStorage
-  const token = localStorage.getItem('token'); // ดึง token จาก localStorage
+  const userId = localStorage.getItem('id');
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    navigate(`/ProfilePage`);
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -40,6 +46,8 @@ function Navbar() {
           src={user.profile_picture ? `http://127.0.0.1:8000${user.profile_picture}` : "/profileDefault.jpg"}
           alt="Profile"
           className="navbar-profile"
+          onClick={handleProfileClick}
+          style={{ cursor: "pointer" }}
         />
       </div>
     </nav>
