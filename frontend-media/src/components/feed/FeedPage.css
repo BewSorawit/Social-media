@@ -19,7 +19,7 @@
 
 .sidebar ul {
   list-style-type: none;
-  padding: 0;
+  padding: 2;
 }
 
 .sidebar ul li {
@@ -45,7 +45,7 @@
 }
 
 .create-post-btn {
-  margin-top: 10px;
+  margin-top: 10px ;
 }
 
 .post-actions {
@@ -63,4 +63,36 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
+}
+
+.post {
+  max-width: 500px; /* ตั้งค่าสูงสุดของความกว้าง */
+  margin: 10px auto; /* จัดกลางในแนวนอน */
+  padding: 15px; /* เพิ่ม padding รอบ Card */
+  border: 1px solid #ddd; /* เพิ่มเส้นขอบให้ดูชัดเจนขึ้น */
+  border-radius: 8px; /* เพิ่มมุมกลมให้ Card */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้ Card */
+}
+
+
+
+.post-content {
+  color: black; /* เปลี่ยนสีข้อความให้ชัดเจน */
+  background-color: rgba(255, 255, 255, 0.8); /* เพิ่มพื้นหลังให้ข้อความ */
+  padding: 5px 10px; /* เพิ่ม padding รอบข้อความ */
+  margin-bottom: 10px; /* เพิ่มระยะห่างจากรูป */
+}
+
+.post-image {
+  width: 100%;
+}
+
+.post-image img {
+  width: 100%;
+  height: auto;
+}
+
+.post-date {
+  color: rgb(0, 0, 0); /* เปลี่ยนสีข้อความ */
+  font-size: 0.5em; /* ปรับขนาดฟอนต์ให้เล็กลง */
 }
