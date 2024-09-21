@@ -18,6 +18,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.authtoken.models import Token
 from .models import BlacklistedAccessToken
+from django.db.models import Q
 
 
 class UsersViewSet(APIView):
@@ -192,5 +193,5 @@ class UserSearchView(generics.ListAPIView):
     def get_queryset(self):
         query = self.request.query_params.get('q', '')
         if query:
-            return UserProfile.objects.filter(username__icontains=query)
+            return UserProfile.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
         return UserProfile.objects.none()
