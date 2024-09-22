@@ -247,7 +247,7 @@ class PostViewSet(viewsets.ViewSet):
         mutual_followers = UserFollow.objects.filter(
             follower__in=following_users, followed=user).values_list('follower', flat=True)
         posts = Post.objects.filter(
-            Q(visibility='public') |
+            # Q(visibility='public') |
             (Q(author__in=mutual_followers) & Q(visibility='private'))
         )
         serializer = PostSerializer(posts, many=True)
