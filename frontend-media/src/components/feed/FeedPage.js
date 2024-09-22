@@ -177,6 +177,7 @@ function FeedPage() {
 
                                     </div>
                                 </div>
+                                <Card.Text>{post.content}</Card.Text>
 
                                 {post.image && (
                                     <div className="post-image">
@@ -184,7 +185,7 @@ function FeedPage() {
                                     </div>
                                 )}
 
-                                <Card.Text>{post.content}</Card.Text>
+                                
                                 <div className="post-actions">
                                     <Button variant="primary"><FontAwesomeIcon icon={faThumbsUp} /></Button>
                                     
