@@ -16,6 +16,7 @@ function FeedPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [userProfiles, setUserProfiles] = useState({});
     const [filter, setFilter] = useState('all');
+    
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
@@ -42,11 +43,11 @@ function FeedPage() {
                 'Content-Type': 'multipart/form-data'
             }
         })
-            .then(response => {
-                setShowPopup(false);
-                fetchPostsByFilter();
-            })
-            .catch(error => console.error('Error posting data!', error));
+        .then(response => {
+            setShowPopup(false);
+            fetchPostsByFilter();
+        })
+        .catch(error => console.error('Error posting data!', error));
     };
 
     const fetchPostsByFilter = () => {
@@ -56,23 +57,17 @@ function FeedPage() {
 
     const fetchPublicPosts = () => {
         if (!token) return console.error('No token found');
-    
+
         axios.get('http://localhost:8000/hurry-feed/posts/public/', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(response => {
-            
-            const postsWithLikes = response.data.map(post => ({
-                ...post,
-                likes: post.like_count || 0,  // ตั้งค่าจำนวนไลค์จาก API ตั้งแต่ตอนดึงโพสต์
-                likedUserIds: post.liked_user_ids || []  // ข้อมูลผู้ใช้ที่ไลค์
-            }));
+            const postsWithLikes = response.data.map(post => ({ ...post, likes: 0 }));
             setPosts(postsWithLikes);
             fetchUserProfilesForPosts(postsWithLikes);
         })
         .catch(error => console.error('Error fetching public posts:', error));
     };
-    
 
     const fetchPrivatePosts = () => {
         if (!token) return console.error('No token found');
@@ -80,20 +75,13 @@ function FeedPage() {
         axios.get(`http://localhost:8000/hurry-feed/posts/users/${userId}/followed_posts/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
-            .then(response => {
-                const postsWithLikes = response.data.map(post => ({
-                    ...post,
-                    likes: post.like_count || 0, // ใช้จำนวนไลค์จาก API
-                    likedUserIds: post.liked_user_ids || []  // ข้อมูลผู้ใช้ที่ไลค์
-                }));
-                setPosts(postsWithLikes);
-                fetchUserProfilesForPosts(postsWithLikes);
-            })
-            .catch(error => console.error('Error fetching private posts:', error));
+        .then(response => {
+            const postsWithLikes = response.data.map(post => ({ ...post, likes: 0 }));
+            setPosts(postsWithLikes);
+            fetchUserProfilesForPosts(postsWithLikes);
+        })
+        .catch(error => console.error('Error fetching private posts:', error));
     };
-
-
-
 
     const fetchUserProfilesForPosts = (posts) => {
         const uniqueUserIds = [...new Set(posts.map(post => post.author))];
@@ -106,10 +94,10 @@ function FeedPage() {
         axios.get(`http://localhost:8000/hurry-feed/users/user_profile/${id}/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
-            .then(response => {
-                setUserProfiles(prev => ({ ...prev, [id]: response.data.data }));
-            })
-            .catch(error => console.error('Error fetching user profile:', error));
+        .then(response => {
+            setUserProfiles(prev => ({ ...prev, [id]: response.data.data }));
+        })
+        .catch(error => console.error('Error fetching user profile:', error));
     };
 
     const fetchUserProfile = () => {
@@ -118,41 +106,29 @@ function FeedPage() {
         axios.get(`http://localhost:8000/hurry-feed/users/user_profile/${userId}/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
-            .then(response => setUserProfile(response.data.data))
-            .catch(error => console.error('Error fetching user profile:', error));
+        .then(response => setUserProfile(response.data.data))
+        .catch(error => console.error('Error fetching user profile:', error));
     };
 
     const handleLikePost = (postId) => {
         axios.post('http://localhost:8000/hurry-feed/likes/like_unlike/', { post_id: postId }, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
-            .then(response => {
-                // หลังจากที่กด like สำเร็จ ให้ fetch ข้อมูล like count
-                fetchLikeCount(postId);
-            })
-            .catch(error => console.error('Error liking post:', error));
-    };
-     const fetchLikeCount = (postId) => {
-        axios.get(`http://localhost:8000/hurry-feed/likes/${postId}/like_count/`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        .then(response => {
+            setPosts(prevPosts => 
+                prevPosts.map(post => {
+                    if (post.post_id === postId) {
+                        return { 
+                            ...post, 
+                            likes: response.data.detail === 'Liked' ? (post.likes + 1) : Math.max(post.likes - 1, 0)
+                        };
+                    }
+                    return post;
+                })
+            );
         })
-            .then(response => {
-                setPosts(prevPosts =>
-                    prevPosts.map(post => {
-                        if (post.post_id === postId) {
-                            return {
-                                ...post,
-                                likes: response.data.like_count,
-                                likedUserIds: response.data.liked_user_ids // อัปเดต likedUserIds
-                            };
-                        }
-                        return post;
-                    })
-                );
-            })
-            .catch(error => console.error('Error fetching like count:', error));
+        .catch(error => console.error('Error liking post:', error));
     };
-
 
     useEffect(() => {
         fetchPostsByFilter();
@@ -166,9 +142,9 @@ function FeedPage() {
                     <ul>
                         <Form.Group controlId="filterDropdown">
                             <Form.Label>Show Posts From</Form.Label>
-                            <Form.Control
-                                as="select"
-                                value={filter}
+                            <Form.Control 
+                                as="select" 
+                                value={filter} 
                                 onChange={(e) => setFilter(e.target.value)}
                             >
                                 <option value="all">All</option>
@@ -204,10 +180,10 @@ function FeedPage() {
                         <Card key={post.post_id} className="post">
                             <Card.Body>
                                 <div className="post-header">
-                                    <img
-                                        src={userProfiles[post.author]?.profile_picture ? `http://127.0.0.1:8000${userProfiles[post.author].profile_picture}` : image}
-                                        alt="Post User Avatar"
-                                        className="avatar"
+                                    <img 
+                                        src={userProfiles[post.author]?.profile_picture ? `http://127.0.0.1:8000${userProfiles[post.author].profile_picture}` : image} 
+                                        alt="Post User Avatar" 
+                                        className="avatar" 
                                     />
                                     <div className="post-details">
                                         <h3>{userProfiles[post.author] ? `${userProfiles[post.author].first_name} ${userProfiles[post.author].last_name}` : 'Unknown User'}</h3>
@@ -227,16 +203,10 @@ function FeedPage() {
                                         <FontAwesomeIcon icon={faThumbsUp} />
                                     </Button>
                                     <span>{post.likes} Likes</span>
-                                    {/* <div>
-                                        {post.likedUserIds && post.likedUserIds.map(userId => (
-                                            <span key={userId}>User ID: {userId}</span>
-                                        ))}
-                                    </div> */}
                                 </div>
                             </Card.Body>
                         </Card>
                     ))}
-
                 </Col>
             </Row>
 
@@ -256,12 +226,13 @@ function FeedPage() {
                             />
                         </Form.Group>
                         <Form.Group controlId="postVisibility">
-                            <Form.Control
-                                as="select"
-                                value={postVisibility}
+                            <Form.Control 
+                                as="select" 
+                                value={postVisibility} 
                                 onChange={(e) => setPostVisibility(e.target.value)}
                             >
                                 <option value="public">Public</option>
+                                <option value="friends">Friends</option>
                                 <option value="private">Private</option>
                             </Form.Control>
                         </Form.Group>
