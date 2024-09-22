@@ -120,9 +120,9 @@ function FeedPage() {
         <Container>
             <Row>
                 <Col md={2} className="sidebar">
-                    <ul>
+                    <ul >
                         {/* Dropdown filter */}
-                    <Form.Group controlId="filterDropdown">
+                    <Form.Group controlId="filterDropdown" className='show-post'>
                         <Form.Label>Show Posts From</Form.Label>
                         <Form.Control 
                             as="select" 

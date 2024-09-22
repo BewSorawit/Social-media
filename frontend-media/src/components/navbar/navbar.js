@@ -94,6 +94,7 @@ function Navbar() {
                 <Dropdown.Item key={result.id} onClick={() => handleSelectUser(result.id)}>
                   <Image
                     src={result.profile_picture ? result.profile_picture : "/profileDefault.jpg"}
+                    className="navbar-profile"
                     alt="Profile"
                     roundedCircle
                     style={{ width: "30px", height: "30px", marginRight: "10px" }}
