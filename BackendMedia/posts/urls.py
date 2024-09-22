@@ -11,8 +11,7 @@ urlpatterns = [
     # แสดงรายการโพสต์ public โดยผู้เขียนคนใดคนหนึ่ง
     path('public/by_author/<int:author_id>/',
          PostViewSet.as_view({'get': 'list_public_by_author'})),
-    # แสดงรายการโพสต์ private public โดยผู้เขียนคนใดคนหนึ่ง
-     path('public_and_private/by_author/<int:author_id>/',
+    path('public_and_private/by_author/<int:author_id>/',
          PostViewSet.as_view({'get': 'list_public_and_private_by_author'})),
 
     # แสดงรายการโพสต์ทั้งหมดบนโลก
@@ -25,10 +24,12 @@ urlpatterns = [
     # อัพเดทและลบโพสต์
     path('<int:pk>/',
          PostViewSet.as_view({'put': 'update', 'delete': 'delete'})),
-     # แสดงรายการโพสต์ของคนที่เราติดตาม
+    # แสดงรายการโพสต์ของคนที่เราติดตาม
     path('users/<int:user_id>/followed_posts/',
          PostViewSet.as_view({'get': 'get_followed_posts'}), name='followed-posts'),
 
+    path('users/<int:user_id>/profile_posts/',
+         PostViewSet.as_view({'get': 'get_user_profile_posts'}), name='user-profile-posts'),
 
 
 ]
