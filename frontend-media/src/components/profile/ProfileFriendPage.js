@@ -100,8 +100,8 @@ const ProfileFriendPage = () => {
             <div className="profile-details">
               <h1 className="profile-name">{user.first_name} {user.last_name}</h1>
               <div className="profile-actions">
-                <Button 
-                  variant={isFollowing ? "secondary" : "primary"}
+                <Button
+                  variant={isFollowing ? "danger" : "primary"} // เปลี่ยนเป็น "danger" เมื่อ Unfollow
                   onClick={handleFollowToggle}
                 >
                   {isFollowing ? "Unfollow" : "Follow"}
