@@ -31,8 +31,9 @@ const ProfilePage = () => {
                 const id = localStorage.getItem('id'); // ดึง userId จาก localStorage
                 const token = localStorage.getItem('token'); // ดึง token จาก localStorage
 
-                console.log(id)
-                console.log(token)
+                // เช็ค id กับ token
+                // console.log(id)
+                // console.log(token)
 
                 if (!token || !id) {
                     console.error('No token or userId found. Please login.');
