@@ -66,7 +66,7 @@ function FeedPage() {
     const fetchPrivatePosts = () => {
         if (!token) return console.error('No token found');
     
-        axios.get('http://localhost:8000/hurry-feed/posts/privates/', {
+        axios.get(`http://localhost:8000/hurry-feed/posts/users/${userId}/followed_posts/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(response => {
@@ -134,20 +134,16 @@ function FeedPage() {
                         </Form.Control>
                     </Form.Group>
                         <li>
-                            <Link to="/">
+                            <Link to="/FeedPage">
                                 <FontAwesomeIcon icon={faNewspaper} /> Feed
                             </Link>
                         </li>
                         <li>
-                            <Link to="/profile">
+                            <Link to="/ProfilePage">
                                 <FontAwesomeIcon icon={faUser} /> Profile
                             </Link>
                         </li>
-                        <li>
-                            <Link to="/settings">
-                                <FontAwesomeIcon icon={faCog} /> Settings
-                            </Link>
-                        </li>
+                        
                     </ul>
                 </Col>
                 <Col md={8} className="feed-content">
