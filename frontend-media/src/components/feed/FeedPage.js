@@ -56,23 +56,23 @@ function FeedPage() {
 
     const fetchPublicPosts = () => {
         if (!token) return console.error('No token found');
-    
+
         axios.get('http://localhost:8000/hurry-feed/posts/public/', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
-        .then(response => {
-            
-            const postsWithLikes = response.data.map(post => ({
-                ...post,
-                likes: post.like_count || 0,  // ตั้งค่าจำนวนไลค์จาก API ตั้งแต่ตอนดึงโพสต์
-                likedUserIds: post.liked_user_ids || []  // ข้อมูลผู้ใช้ที่ไลค์
-            }));
-            setPosts(postsWithLikes);
-            fetchUserProfilesForPosts(postsWithLikes);
-        })
-        .catch(error => console.error('Error fetching public posts:', error));
+            .then(response => {
+
+                const postsWithLikes = response.data.map(post => ({
+                    ...post,
+                    likes: post.like_count || 0,  // ตั้งค่าจำนวนไลค์จาก API ตั้งแต่ตอนดึงโพสต์
+                    likedUserIds: post.liked_user_ids || []  // ข้อมูลผู้ใช้ที่ไลค์
+                }));
+                setPosts(postsWithLikes);
+                fetchUserProfilesForPosts(postsWithLikes);
+            })
+            .catch(error => console.error('Error fetching public posts:', error));
     };
-    
+
 
     const fetchPrivatePosts = () => {
         if (!token) return console.error('No token found');
@@ -132,7 +132,7 @@ function FeedPage() {
             })
             .catch(error => console.error('Error liking post:', error));
     };
-     const fetchLikeCount = (postId) => {
+    const fetchLikeCount = (postId) => {
         axios.get(`http://localhost:8000/hurry-feed/likes/${postId}/like_count/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -192,7 +192,7 @@ function FeedPage() {
                         <Card.Body>
                             <div className="post-header">
                                 <img src={userProfile?.profile_picture ? `http://127.0.0.1:8000${userProfile.profile_picture}` : image} alt="User Avatar" className="avatar" />
-                                <Form.Control type="text" placeholder="Write a comment..." />
+                                <Form.Control type="text" placeholder="Write a Post..." />
                             </div>
                             <Button className="create-post-btn" onClick={handlePostClick}>
                                 Create
