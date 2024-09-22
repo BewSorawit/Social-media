@@ -55,13 +55,13 @@
     box-sizing: border-box;
   }
   
-  input:focus,
+  /* input:focus,
   select:focus {
     border-color: #4CAF50;
     outline: none;
-  }
+  } */
   
-  .register-form button {
+  .register-form .btn-register {
     padding: 10px;
     background-color: #4CAF50;
     color: white;
@@ -76,10 +76,10 @@
 
   }
   
-  button:hover {
+  /* button:hover {
     background-color: #45a049;
-  }
-  
+  } */
+
   select{
     height: 45px;
   }
@@ -96,4 +96,18 @@
     color: #758694;
     align-self: center;
     margin: 0;
+  }
+
+  .btn-showhidePass{
+    width: 60px;
+    border: 2px solid #7F93FB;
+    background-color: white; /* พื้นหลังสีขาว */
+    color: #7F93FB;
+    border-radius: 5px;
+    margin: 0;
+    margin-bottom: 8px;
+    height: 30px;
+  }
+  #password {
+    width: 375px;
   }

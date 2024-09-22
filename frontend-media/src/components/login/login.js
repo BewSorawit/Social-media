@@ -8,19 +8,23 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
       // เรียก API สำหรับ login
-      const response = await axios.post("http://127.0.0.1:8000/hurry-feed/users/login/", {
-        username: username,
-        password: password,
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/hurry-feed/users/login/",
+        {
+          username: username,
+          password: password,
+        }
+      );
 
       if (response.status === 200 && response.data.access) {
         // เก็บ token ลง localStorage
 
-        localStorage.setItem("id", response.data.id);//userId
+        localStorage.setItem("id", response.data.id); //userId
         localStorage.setItem("token", response.data.access);
 
         // นำทางไปที่หน้า Feed
@@ -49,17 +53,29 @@ function Login() {
             onChange={(e) => setUsername(e.target.value)} // เก็บค่า username
           />
         </div>
-        <div className="input-group">
+        <div className="input-group2">
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)} // เก็บค่า password
           />
         </div>
+        <div className="innerBox">
+          <button
+            type="button"
+            className="btn-showhidePass"
+            onClick={() => setShowPassword(!showPassword)} // สลับสถานะ show/hide
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-        
-        <button className="login-button" onClick={handleLogin}>Login</button>
+
+        <button className="login-button" onClick={handleLogin}>
+          Login
+        </button>
         <p>
           Don't have an account?
           <a className="btn-register" onClick={() => navigate("/register")}>

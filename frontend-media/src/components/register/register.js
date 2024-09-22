@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import './register.css';
+import "./register.css";
 import axios from "axios";
 
 function Register() {
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    date_of_birth: '',
-    gender: '',
-    profile_picture: null
+    first_name: "",
+    last_name: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    date_of_birth: "",
+    gender: "",
+    profile_picture: null,
   });
 
+  const [showPassword, setShowPassword] = useState(false); // สำหรับสลับการแสดงรหัสผ่าน
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // สำหรับ confirm password
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -37,13 +39,20 @@ function Register() {
     }
 
     axios
-      .post("http://127.0.0.1:8000/hurry-feed/users/user_profile/create_user/", formData)
+      .post(
+        "http://127.0.0.1:8000/hurry-feed/users/user_profile/create_user/",
+        formData
+      )
       .then((response) => {
-        alert("Registration Successful!");
-        console.log(response.data);
+        // alert("Registration Successful!");
+        // console.log(response.data);
+        navigate("/");
       })
       .catch((error) => {
-        console.error("There was an error registering!", error.response ? error.response.data : error.message);
+        console.error(
+          "There was an error registering!",
+          error.response ? error.response.data : error.message
+        );
       });
   };
 
@@ -58,7 +67,8 @@ function Register() {
             <input
               type="text"
               name="first_name"
-              value={formData.first_name || ''}
+              maxLength="20"
+              value={formData.first_name || ""}
               onChange={handleChange}
               required
             />
@@ -69,7 +79,8 @@ function Register() {
             <input
               type="text"
               name="last_name"
-              value={formData.last_name || ''}
+              maxLength="20"
+              value={formData.last_name || ""}
               onChange={handleChange}
               required
             />
@@ -81,7 +92,8 @@ function Register() {
           <input
             type="text"
             name="username"
-            value={formData.username || ''}
+            maxLength="20"
+            value={formData.username || ""}
             onChange={handleChange}
             required
           />
@@ -89,32 +101,53 @@ function Register() {
 
         <div className="form-group">
           <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password || ''}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-row">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password || ""}
+              onChange={handleChange}
+              required
+            />
+            <button
+              type="button"
+              className="btn-showhidePass"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
         </div>
+
         <div className="form-group">
           <label>Confirm Password:</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword || ''}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-row">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              id="password"
+              name="confirmPassword"
+              value={formData.confirmPassword || ""}
+              onChange={handleChange}
+              required
+            />
+            <button
+              type="button"
+              className="btn-showhidePass"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
+          </div>
         </div>
-        
+
         <div className="form-row">
           <div className="form-group">
             <label>Date of Birth:</label>
             <input
               type="date"
               name="date_of_birth"
-              value={formData.date_of_birth || ''}
+              value={formData.date_of_birth || ""}
               onChange={handleChange}
               required
             />
@@ -124,7 +157,7 @@ function Register() {
             <label>Gender:</label>
             <select
               name="gender"
-              value={formData.gender || ''}
+              value={formData.gender || ""}
               onChange={handleChange}
               required
             >
@@ -134,11 +167,15 @@ function Register() {
               <option value="O">Other</option>
             </select>
           </div>
-          </div>
-        <button type="submit">Register</button>
+        </div>
+        <button type="submit" className="btn-register">
+          Register
+        </button>
         <p>
           Already have an account?
-          <a className="btn-login" onClick={handleLogin}>Login</a>
+          <a className="btn-login" onClick={handleLogin}>
+            Login
+          </a>
         </p>
       </form>
     </div>
