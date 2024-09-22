@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Dropdown, FormControl } from "react-bootstrap"; // นำเข้า react-bootstrap
+import { Dropdown, FormControl, Image } from "react-bootstrap"; // นำเข้า react-bootstrap และ Image
 import "./navbar.css";
 
 function Navbar() {
@@ -92,6 +92,12 @@ function Navbar() {
             <Dropdown.Menu>
               {searchResults.map((result) => (
                 <Dropdown.Item key={result.id} onClick={() => handleSelectUser(result.id)}>
+                  <Image
+                    src={result.profile_picture ? result.profile_picture : "/profileDefault.jpg"}
+                    alt="Profile"
+                    roundedCircle
+                    style={{ width: "30px", height: "30px", marginRight: "10px" }}
+                  />
                   {result.first_name} {result.last_name}
                 </Dropdown.Item>
               ))}

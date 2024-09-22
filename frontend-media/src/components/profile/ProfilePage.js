@@ -51,7 +51,7 @@ const ProfilePage = () => {
                 setUser(userResponse.data.data); // เก็บข้อมูล user
 
                 // ดึงข้อมูล posts จาก API
-                const postsResponse = await axios.get(`http://127.0.0.1:8000/hurry-feed/posts/public/by_author/${id}/`,
+                const postsResponse = await axios.get(`http://127.0.0.1:8000/hurry-feed/posts/public_and_private/by_author/${id}/`,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}` // ส่ง token ใน header
