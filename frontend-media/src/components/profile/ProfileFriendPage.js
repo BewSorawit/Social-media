@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Container, Row, Col, Image } from "react-bootstrap";
 import axios from "axios";
+import PostList from "./ProfilePostPage";
 import "./ProfileFriendPage.css";
 
 const ProfileFriendPage = () => {
@@ -11,6 +12,8 @@ const ProfileFriendPage = () => {
   const [isFollowing, setIsFollowing] = useState(false); // Track following status
   const token = localStorage.getItem('token'); // Get token from localStorage
   const loggedInUserId = localStorage.getItem('id'); // User ID ของคนที่ล็อกอิน
+
+  const [posts, setPosts] = useState({});
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -40,7 +43,14 @@ const ProfileFriendPage = () => {
             },
           }
         );
-
+        const postsResponse = await axios.get(`http://127.0.0.1:8000/hurry-feed/posts/users/${userId}/profile_posts/`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}` // ส่ง token ใน header
+            }
+          }
+        );
+        setPosts(postsResponse.data);
         // ตรวจสอบว่าคนที่เราดูโปรไฟล์ (userId) อยู่ในรายชื่อที่เราติดตามหรือไม่
         const isFollowingUser = followingResponse.data.some(
           (followedUser) => followedUser.id === userId
@@ -111,6 +121,13 @@ const ProfileFriendPage = () => {
           </Col>
         </Row>
       </header>
+
+      <section className="profile-content mt-5">
+        <Col md={8} className="mx-auto">
+          <h2 className="text-center">Posts</h2>
+          <PostList posts={posts} user={user} />
+        </Col>
+      </section>
     </Container>
   );
 };
