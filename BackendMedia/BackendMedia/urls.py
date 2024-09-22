@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hurry-feed/users/', include('users.urls')),
     path('hurry-feed/posts/', include('posts.urls')),
+    path('hurry-feed/likes/', include('likes.urls')),
     path('hurry-feed/userfollow/', include('follows.urls')),
     path('hurry-feed/postaccess/', include('postaccess.urls')),
 
