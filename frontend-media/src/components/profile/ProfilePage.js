@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 import { Button, Container, Row, Col, Image } from "react-bootstrap";
 import axios from "axios";
-import "./ProfilePage.css";
+
 import PostList from "./ProfilePostPage";
 import EditProfileModal from "./EditProfileModal"; // นำเข้า Modal
 
