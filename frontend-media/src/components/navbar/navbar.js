@@ -76,6 +76,24 @@ function Navbar() {
     }
   };
 
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      await axios.post(`http://127.0.0.1:8000/hurry-feed/users/logout/`, null, {
+        headers: {
+          'Authorization': `Bearer ${token}` // Send token in header
+        }
+      });
+
+      // Clear localStorage and navigate to login page
+      localStorage.removeItem('token');
+      localStorage.removeItem('id');
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
@@ -106,13 +124,19 @@ function Navbar() {
           )}
         </Dropdown>
 
-        <img
-          src={user.profile_picture ? `http://127.0.0.1:8000${user.profile_picture}` : "/profileDefault.jpg"}
-          alt="Profile"
-          className="navbar-profile"
-          onClick={handleProfileClick}
-          style={{ cursor: "pointer" }}
-        />
+        <Dropdown align="end"> {/* Add dropdown for user menu */}
+          <Dropdown.Toggle as={Image}
+            src={user.profile_picture ? `http://127.0.0.1:8000${user.profile_picture}` : "/profileDefault.jpg"}
+            alt="Profile"
+            className="navbar-profile"
+            style={{ cursor: "pointer", width: "40px", height: "40px" }}
+          />
+
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={handleProfileClick}>Profile</Dropdown.Item>
+            <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item> {/* Add Logout option */}
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </nav>
   );
